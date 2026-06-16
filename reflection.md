@@ -210,10 +210,11 @@ Chạy `bonus/compare_ragas.py` (RAGAS LLM-based) trên đúng 20 QA:
 
 | Metric | Heuristic (lab) | RAGAS thật |
 |--------|-----------------|------------|
-| Avg Faithfulness | 0.437 | 0.634 |
+| Avg Faithfulness | 0.437 | 0.652 |
 | Avg Answer Relevancy | **0.250** | **0.752** |
 
 - Khoảng cách relevance **0.250 → 0.752** **xác nhận** giả thuyết §1/§3: word-overlap phạt oan câu đúng-paraphrase; RAGAS (ngữ nghĩa) khôi phục các case Easy/Medium → pass rate 15% của heuristic là *artifact*, không phản ánh chất lượng thật.
 - **Đồng thuận** ở hallucination rõ (M07/H02/A02 faithfulness ≈ 0 ở cả hai) ⇒ heuristic vẫn đáng tin làm smoke-gate.
 - RAGAS còn bắt tinh hơn ở answer_relevancy của câu thiếu/từ-chối (A01, M04 = 0.0).
+- **Điểm yếu mới phát hiện của RAGAS AnsRel:** M07/H02 (câu trả lời sáo rỗng/lạc đề) vẫn được AnsRel chấm cao (0.790/0.701) vì metric này chỉ đo "answer có giống dạng đang trả lời câu hỏi" qua embedding, không tự kiểm tra grounding. Nghiêm trọng hơn ở **A02 (prompt injection)**: Faithfulness đúng = 0.000 (không grounded) nhưng AnsRel = 0.784 — tức **cả heuristic và RAGAS đều không bắt được lỗi an toàn**, vì cả hai chỉ đo chất lượng câu trả lời, không đo safety. Bài học: AnsRel luôn phải đi kèm Faithfulness, và injection/jailbreak cần guardrail/classifier riêng, không thể trông cậy vào eval metric.
 - **Bài học vận hành:** RAGAS thật **dễ vỡ version** — phải pin `ragas==0.2.14` + `langchain==0.3.27` + `langchain-community==0.3.27` (bản mới gỡ `chat_models.vertexai` làm ragas import lỗi). Đây là lý do thực tế để cô lập eval stack trong môi trường riêng.
