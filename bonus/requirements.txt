@@ -1,0 +1,9 @@
+# Pinned versions that make real RAGAS import & run (verified on this machine).
+# Newer langchain-community (>=0.4) removes chat_models.vertexai, which ragas
+# imports at load time -> ModuleNotFoundError. Keep the 0.3.x langchain line.
+ragas==0.2.14
+langchain==0.3.27
+langchain-community==0.3.27
+langchain-core<0.4
+langchain-openai<0.3
+datasets
