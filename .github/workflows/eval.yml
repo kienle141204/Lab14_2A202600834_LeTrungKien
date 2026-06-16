@@ -1,0 +1,34 @@
+name: RAG Evaluation Quality Gate
+
+# Eval as a CI gate: unit tests must pass, then the golden-dataset benchmark
+# must clear the metric thresholds before a deploy is allowed.
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  evaluate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: pip install pytest
+
+      - name: Unit tests (hard gate)
+        run: pytest tests/ -v
+
+      - name: Evaluation quality gate
+        env:
+          FAITHFULNESS_GATE: "0.40"
+          RELEVANCE_GATE: "0.20"
+          COMPLETENESS_GATE: "0.50"
+        run: python ci_gate.py
